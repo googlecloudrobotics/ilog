@@ -85,9 +85,9 @@ func (h *LogHandler) appendAttr(w io.Writer, a slog.Attr) (int, error) {
 	}
 	switch a.Value.Kind() {
 	case slog.KindString:
-		return fmt.Fprintf(w, "%s=%s ", a.Key, a.Value.String())
+		return fmt.Fprintf(w, "%q=%q ", a.Key, a.Value.String())
 	case slog.KindTime:
-		return fmt.Fprintf(w, "%s=%s ", a.Key, a.Value.Time().UTC().Format(time.RFC3339))
+		return fmt.Fprintf(w, "%q=%q ", a.Key, a.Value.Time().UTC().Format(time.RFC3339))
 	case slog.KindGroup:
 		// TODO: how to handle KindGroup?
 	default:
@@ -98,7 +98,7 @@ func (h *LogHandler) appendAttr(w io.Writer, a slog.Attr) (int, error) {
 		// slog.KindInt64:
 		// slog.KindUint64:
 		// slog.KindLogValuer:
-		return fmt.Fprintf(w, "%s=%s ", a.Key, a.Value)
+		return fmt.Fprintf(w, "%q=%q ", a.Key, a.Value)
 	}
 	return 0, nil
 }
