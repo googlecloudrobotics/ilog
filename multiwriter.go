@@ -33,11 +33,11 @@ func logLevelFromString(str string) (slog.Level, error) {
 		return slog.LevelDebug, nil
 	case "info":
 		return slog.LevelInfo, nil
-	case "warn":
+	case "warn", "warning":
 		return slog.LevelWarn, nil
 	case "error":
 		return slog.LevelError, nil
-  default:
+	default:
 		return slog.LevelInfo, fmt.Errorf("unknown log level %s", str)
 	}
 }
