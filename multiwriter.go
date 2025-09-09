@@ -15,11 +15,40 @@
 package ilog
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"log/slog"
 	"os"
+	"strings"
 )
+
+var (
+	level slog.Level = slog.LevelInfo
+)
+
+func logLevelFromString(str string) (slog.Level, error) {
+	switch str {
+	case "debug":
+		return slog.LevelDebug, nil
+	case "info":
+		return slog.LevelInfo, nil
+	case "warn", "warning":
+		return slog.LevelWarn, nil
+	case "error":
+		return slog.LevelError, nil
+	default:
+		return slog.LevelInfo, fmt.Errorf("unknown log level %s", str)
+	}
+}
+
+func SetupFlags(fs *flag.FlagSet) {
+	fs.Func("log-level", "Sets the log level. Allowed values are: debug, info, warn, error", func(str string) error {
+		var err error
+		level, err = logLevelFromString(strings.ToLower(str))
+		return err
+	})
+}
 
 type multiCloser struct {
 	closer []io.Closer
@@ -55,7 +84,7 @@ func Setup(fs ...string) (io.Closer, error) {
 		mc.closer = append(mc.closer, w)
 		writer = append(writer, w)
 	}
-	nh := NewLogHandler(slog.LevelInfo, io.MultiWriter(writer...))
+	nh := NewLogHandler(level, io.MultiWriter(writer...))
 	slog.SetDefault(slog.New(nh))
 	return &mc, nil
 }
